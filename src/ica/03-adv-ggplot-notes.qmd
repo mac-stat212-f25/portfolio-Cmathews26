@@ -65,10 +65,16 @@ Examine the [NYTimes 2015 Temperature Visualization (html)](https://www.nytimes.
   - What key message/claim does NYTimes want readers to be able to explore? 
   - How did this goal inform what information is displayed in the visualization?
 
+- They want users to be able to compare the temperatures in their city to those of 2015 in order to show global temperature change over the last decade
+
+- Visualization details like record highs, normal range, and actual range showcase the extent and drastic nature of the temp changes. 
+
 **Aesthetic Mapping** 
 
 - What specific variables (from the data codebook) underlie the visualization?
+All of the normal low/highs as well as the record lows/highs
 - How do these variables map to aesthetics of the visual elements, eg, position, size, shape, and color of glyphs?
+They are positioned at the forefront and highlighted in red if they're a record high or low and they're in the background if they're normal temps. 
 
 
 
@@ -146,6 +152,18 @@ In your visualization, also display the usual temperatures (`NormalLow` and `Nor
 ![SFO observed, Average, and Record Daily Temperatures in 2011](https://hash-mac.github.io/stat212site-f25/images/sfo_second_graph.png)
 
 ```{r weather_plot_temp_all}
+library(ggplot2)
+
+ggplot(weather, aes(x = dateInYear)) +
+  geom_ribbon(
+    aes(ymin = NormalLow, ymax = NormalHigh),
+    fill = "#C8B8BA"
+  ) +
+  geom_ribbon(
+    aes(ymin = Low, ymax = High),
+    fill = "#A90248"
+  ) +
+  labs(x = "dateInYear") + theme_minimal()
 
 
 ```
@@ -162,7 +180,13 @@ Recreate the visual demarcations of the months by adding vertical lines separati
 
 ```{r }
 
+month_starts <- c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335)
 
+ggplot(weather, aes(x = dateInYear)) +
+  geom_ribbon(aes(ymin = NormalLow, ymax = NormalHigh), fill = "#C8B8BA") +
+  geom_ribbon(aes(ymin = Low, ymax = High), fill = "#A90248") +
+  geom_vline(xintercept = month_starts, color = "grey40", linetype = "dashed") +
+  labs(x = "dateInYear") + theme_minimal() 
 ```
 
 
@@ -181,6 +205,27 @@ Try to figuring out this new challenge using search engines and LLMs:
 - **Search Engines.** Use Google to search for possible solutions using the jargon that is most likely to return the most relevant results. Record search queries and your thought process in selecting which search results to look at first.
 
 - **LLMs.** Use [ChatGPT](https://chat.openai.com/) or [Gemini](https://gemini.google.com/) with prompts that will most efficiently get you the desired results. Record the chat prompts used and output given. Evaluate the output. Do you fully understand the code generated? How can you tell that the generated code is correct?
+```{r}
+month_centers <-
+  weather %>%
+  mutate(mon = month(date)) %>%                 
+  group_by(mon) %>%
+  summarize(xmin = min(dateInYear), xmax = max(dateInYear), .groups = "drop") %>%
+  mutate(center = (xmin + xmax)/2)
+
+ggplot(weather, aes(x = dateInYear)) +
+  geom_ribbon(aes(ymin = NormalLow, ymax = NormalHigh), fill = "#C8B8BA") +
+  geom_ribbon(aes(ymin = Low, ymax = High), fill = "#A90248") +
+  # optional: month boundary lines
+  geom_vline(xintercept = month_centers$xmin, linetype = "dashed", color = "grey50") +
+  scale_x_continuous(
+    breaks = month_centers$center,
+    labels = month.abb,       # or month.name for full names
+    expand = c(0, 0)
+  ) +
+  labs(x = NULL, y = "Temperature (°F)") +
+  theme_minimal()
+```
 
 
 ## Exercise 6 
@@ -195,7 +240,42 @@ Create a precipitation plot that looks like the following.  Note that
 
 
 ```{r weather_plot_precip}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
 
+weather <- weather %>%
+  mutate(month = month(date)) %>%
+  group_by(month) %>%
+  arrange(date) %>%
+  mutate(CumPrec = cumsum(Precip)) %>%
+  ungroup()
+
+monthly_totals <- weather %>%
+  group_by(month) %>%
+  summarize(
+    total = sum(Precip, na.rm = TRUE),
+    center = mean(dateInYear)   # position for the label
+  )
+
+ggplot(weather, aes(x = dateInYear, y = CumPrec)) +
+  # Tan fill per month
+  geom_area(fill = "#ebae2e", alpha = 0.5) +
+  # Blue outline
+  geom_line(color = "#32a3d8") +
+  # Triangles at record precipitation days
+  geom_point(
+    data = weather %>% filter(Precip == RecordP),
+    aes(y = CumPrec),
+    shape = 25, size = 3, fill = "black"
+  ) +
+  geom_text(
+    data = monthly_totals,
+    aes(x = center, y = total, label = round(total, 2)),
+    vjust = -0.5, hjust = 0.5
+  ) +
+  labs(x = "dateInYear", y = "CulmPrec") +
+  theme_minimal()
 ```
 ## Done!
 

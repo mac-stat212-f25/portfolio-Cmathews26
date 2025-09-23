@@ -220,7 +220,7 @@ df <- tibble(
     word_id = 1:3,
     word = c("replace", "match", "pattern")
 )
-str_sub(word, start = 1, end = 15)
+
 
 
 ```
