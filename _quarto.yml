@@ -45,7 +45,7 @@ book:
       # footer text
 
   sidebar:
-    title: "Your Name Here"
+    title: "Colin Mathews"
     logo: assets/sidebar-logo.png
     logo-alt: "Random negative space illustration"
     collapse-level: 2
@@ -74,7 +74,7 @@ book:
       - src/ica/ica-sample1.qmd
       - src/ica/ica-sample2.qmd
       - src/ica/03-adv-ggplot-notes.qmd
-      - src/ica/04-adv-maps-1-notes.qmd
+      - src/ica/04-adv-maps
       - src/ica/07-wrangling-2-notes.qmd
 
   appendices:
