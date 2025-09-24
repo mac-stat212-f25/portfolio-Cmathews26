@@ -60,6 +60,7 @@ library(sf) # tools for working with spatial vector data (GIS functionality, map
 library(elevatr) # access to raster elevation maps
 library(terra)
 library(stars)
+library(tidycensus)
 library(USAboundaries)
 
 
