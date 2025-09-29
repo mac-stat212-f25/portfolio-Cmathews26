@@ -1,0 +1,5 @@
+---
+title: "5 Adv Spatial Viz"
+---
+
+- The data story here is a visual narrative of 6 asylum seekers into Italy and their progression along their journey as shown by categories like days spent in each city, time traveling, etc. Each of these journeys is represented as a line and the line's appearance changes based on the categories mentioned above. One thing that I found to be really effective was the relative simplicity of the visualizations, which gives the viewer more room to feel the emotional impact of the story they're viewing. Something that I think could be improved is the legibility of the labels when you zoom out. It would be nice if they could consolidate in some way or arrange themselves for an easier viewing format. 
