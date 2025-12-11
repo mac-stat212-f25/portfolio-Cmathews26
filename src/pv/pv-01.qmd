@@ -122,7 +122,7 @@ ggplot(team_stats, aes(x = three_pt_attempt_pct, y = wins)) +
   scale_y_continuous(breaks = seq(10, 70, by = 20)) +
   labs(
     title = "The Three-Point Revolution: More Threes, More Wins",
-    subtitle = "Each point represents one team-season from 2000-2023. Size indicates winning percentage. Arrows show team trajectories over time.\nThe Warriors (gold) pioneered the shift toward high-volume three-point shooting while maintaining elite win totals.",
+    subtitle = "Each point represents one team-season from 2000-2023. Size indicates winning percentage.",
     x = "3-Point Attempts as % of Total Field Goal Attempts",
     y = "Regular Season Wins",
     caption = "Grey points show all NBA teams. Highlighted: Golden State Warriors, Boston Celtics, Detroit Pistons.\nData: NBA Statistics 2000-2023 | Arrows indicate direction of change over time within each era"
@@ -130,13 +130,13 @@ ggplot(team_stats, aes(x = three_pt_attempt_pct, y = wins)) +
   theme_minimal(base_size = 11, base_family = "sans") +
   theme(
     plot.title = element_text(
-      size = 18,
+      size = 16,
       face = "bold",
       hjust = 0,
       margin = margin(b = 5)
     ),
     plot.subtitle = element_text(
-      size = 10,
+      size = 8,
       color = "grey20",
       hjust = 0,
       lineheight = 1.3,
@@ -154,7 +154,7 @@ ggplot(team_stats, aes(x = three_pt_attempt_pct, y = wins)) +
     axis.title.y = element_text(margin = margin(r = 10)),
     axis.title.x = element_text(margin = margin(t = 10)),
     strip.text = element_text(
-      size = 11,
+      size = 8,
       face = "bold",
       hjust = 0,
       color = "grey10",
@@ -176,5 +176,6 @@ ggplot(team_stats, aes(x = three_pt_attempt_pct, y = wins)) +
     panel.background = element_rect(fill = "white", color = NA)
   )
 
-ggsave("nba_3pt_multivariate.png", width = 14, height = 6, dpi = 300, bg = "white")
+ggsave(
+  "nba_3pt_multivariate.png", bg = "white", dpi = 300, limitsize = FALSE, device = "png")
 ```

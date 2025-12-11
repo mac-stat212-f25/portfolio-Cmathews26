@@ -66,8 +66,9 @@ book:
 
     - part: "TidyTuesday"
       chapters:
-      - src/tt/2025-07-08.qmd
-      - src/tt/2025-07-15.qmd
+      - src/tt/hw04-tt1.qmd
+      - src/tt/hw05-tt1.qmd
+
 
     - part: "In-Class Activities"
       chapters:
@@ -80,14 +81,7 @@ book:
       - src/ica/07-wrangling-2-notes.qmd
 
   appendices:
-  - mm/Adv_Viz_P2.jpeg
-  - mm/Missing_Data.jpeg
-  - mm/Functions.jpeg
-  - mm/Base_R.jpeg
-  - mm/Loops.jpeg
-  - mm/APIs.jpeg
-  - mm/Scraping.jpeg
-  - mm/SQL.jpeg
+    - mm/mm.md
 
 
 
