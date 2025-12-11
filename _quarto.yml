@@ -80,9 +80,14 @@ book:
       - src/ica/07-wrangling-2-notes.qmd
 
   appendices:
-  - src/appx/appx-sample1.qmd
-  - src/appx/appx-sample2.qmd
-  - mm/mm.md
+  - mm/Adv_Viz_P2.jpeg
+  - mm/Missing_Data.jpeg
+  - mm/Functions.jpeg
+  - mm/Base_R.jpeg
+  - mm/Loops.jpeg
+  - mm/APIs.jpeg
+  - mm/Scraping.jpeg
+  - mm/SQL.jpeg
 
 
 
