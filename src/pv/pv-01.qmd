@@ -1,5 +1,5 @@
 ---
-title: "Professional Viz Sample"
+title: "Professional Viz"
 ---
 
 ```{r include = FALSE}
@@ -27,7 +27,7 @@ team_stats %>%
 
 
 ```{r}
-# NYTimes-style multivariate visualization: NBA 3-Point Evolution
+
 # Variables: Season, 3PT%, Wins, Win%, Team
 
 library(ggplot2)

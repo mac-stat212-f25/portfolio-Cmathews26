@@ -125,7 +125,7 @@ Read in the key with the following code:
 
 
 ```{r read_census_api_key2}
-#| eval: false
+
 census_api_key <- readLines("census_api_key.txt")
 ```
 
@@ -182,7 +182,7 @@ req <- request("https://api.census.gov") |>
 
 Once we've fully constructed our request, we can use `req_perform()` to send out the API request and get a **response**.
 
-```{r census_request}
+```{r census_request, error=TRUE}
 resp <- req_perform(req)
 ```
 
@@ -232,9 +232,11 @@ Let's start at the top of the API documentation page to see how to navigate this
 The following request searches for board games, board game accessories, and board game expansions with the words "mystery" and "curse" in the title:
 
 ```{r httr2_bgg}
-req <- request("https://boardgamegeek.com/xmlapi2") |> 
-    req_url_path_append("search") |> 
-    req_url_query(query = I("mystery+curse"), type = I("boardgame,boardgameaccessory,boardgameexpansion"))
+req <- request("https://boardgamegeek.com/xmlapi2/search") |>
+  req_user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)") |>
+  req_url_query(query = "mystery curse", type = "boardgame") |>
+  req_retry(max_tries = 3, max_seconds = 30)
+
 ```
 
 When we use `req_perform()`, we see from `Content-Type` that the format of the response is something called XML. We can navigate to the request URL to see the structure of this output.
@@ -242,7 +244,7 @@ When we use `req_perform()`, we see from `Content-Type` that the format of the r
 - XML (Extensible Markup Language) is a tree structure of named nodes and attributes.
 - We can use `resp_body_xml()` to read in the XML as an R object.
 
-```{r bgg_response}
+```{r bgg_response, error = TRUE}
 resp <- req_perform(req)
 resp
 resp <- resp_body_xml(resp)
@@ -253,7 +255,7 @@ The XML output is not packaged in a nice way. (We'd love to have a data frame.) 
 
 Let's first use the `xml_structure()` function to see how information is organized:
 
-```{r xml_structure}
+```{r xml_structure, error=TRUE}
 xml_structure(resp)
 ```
 
@@ -267,7 +269,7 @@ The key navigation and extraction functions in `xml2` are:
 - `xml_attr()`: Selects the value of an attribute (the information to the right of the `=` in quotes)
     - `<node_name attribute_name1="attribute_value1" attribute_name2="attribute_value2">`
 
-```{r xml_nav_extract}
+```{r xml_nav_extract, error=TRUE}
 # Get the item nodes in 2 different ways
 resp |> xml_find_all("item")
 resp |> xml_children()
