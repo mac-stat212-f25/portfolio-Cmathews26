@@ -1,0 +1,64 @@
+---
+title: "Homework 3"
+---
+
+
+## TidyTuesday Section (optional)
+
+::: {.callout-important title="Instructions"}
+
+You can count work on this week's TidyTuesday toward the exceptional work required for an A in the Homework component.
+
+:::
+
+
+Explore the week's [TidyTuesday](https://github.com/rfordatascience/tidytuesday) challenge. Develop a research question, then answer it through a short data story with [effective visualization(s)]({{< var effective-viz-url >}}).  Provide sufficient background for readers to grasp your narrative.
+
+Is there a relationship between prep/cook time and average rating?
+
+```{r}
+library(tastyR)
+library(sf)
+library(tidyverse)
+library(dplyr)
+
+all_recipes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-16/all_recipes.csv')
+cuisines <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-16/cuisines.csv')
+```
+
+```{r}
+viz_df <- cuisines |>
+  filter(!is.na(prep_time), !is.na(cook_time),
+                prep_time > 0, cook_time > 0)
+
+ggplot(viz_df, aes(x = prep_time, y = cook_time)) +
+  geom_point(alpha = 0.35) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Is there a relationship between prep time and cook time?",
+       x = "Prep time (minutes)",
+       y = "Cook time (minutes)") +
+  theme_minimal() + 
+  coord_cartesian(xlim = c(0, 200))
+```
+```{r}
+viz <- cuisines |>
+  filter(!is.na(prep_time), !is.na(cook_time),
+         prep_time > 0, cook_time > 0)
+
+# Trim the outliers
+qx <- quantile(viz$prep_time, 0.99, na.rm = TRUE)
+qy <- quantile(viz$cook_time, 0.99, na.rm = TRUE)
+viz <- filter(viz, prep_time <= qx, cook_time <= qy)
+
+ggplot(viz, aes(prep_time, cook_time)) +
+  stat_bin2d(bins = 40) +                      
+  geom_smooth(method = "loess", se = FALSE) + 
+  scale_fill_viridis_c(name = "Recipes", trans = "sqrt") +
+  labs(title = "Prep vs Cook Time (40 recipes per bin)",
+       x = "Prep time (minutes)",
+       y = "Cook time (minutes)") +
+  theme_minimal()
+```
+ANALYSIS: 
+- Yes, there is a very very slight relationship between prep and cook time. The binned heatmap with a loess line shows a really minor positive trend in that recipes with longer prep times tend to sometimes have longer cook times. However, the variance in Cuisines is huge, with many recipes clustering around 10–20 minutes of prep while cook time ranges from very short to several hours (probably something slow cooking or braised), so prep time is a poor predictor of cook time. In summary, a slight relationship exists, but with lots of exceptions and a pretty clear heteroscedasticity or nonconstant variance.
+

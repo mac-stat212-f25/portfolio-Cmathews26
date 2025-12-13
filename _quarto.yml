@@ -66,6 +66,8 @@ book:
 
     - part: "TidyTuesday"
       chapters:
+      - src/tt/hw02-tt1.qmd
+      - src/tt/hw03-tt1.qmd
       - src/tt/hw04-tt1.qmd
       - src/tt/hw05-tt1.qmd
 
@@ -83,7 +85,7 @@ book:
       - src/ica/10-base-r-notes.qmd
       - src/ica/11-iteration-1-notes.qmd
       - src/ica/12-iteration-2-notes.qmd
-      - src/ica/14-apis-2-notes.qmd
+     # - src/ica/14-apis-2-notes.qmd
       - src/ica/15-scraping-notes.qmd
       - src/ica/16-databases-notes.qmd
       - src/ica/18-interactive-viz-notes.qmd
