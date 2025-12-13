@@ -1,0 +1,82 @@
+---
+title: "Homework 2"
+---
+
+
+## TidyTuesday Section (optional)
+
+::: {.callout-important title="Instructions"}
+
+You can count work on this week's TidyTuesday toward the exceptional work required for an A in the Homework component.
+
+:::
+
+
+Explore the week's [TidyTuesday](https://github.com/rfordatascience/tidytuesday) challenge. Develop a research question, then answer it through a short data story with [effective visualization(s)]({{< var effective-viz-url >}}).  Provide sufficient background for readers to grasp your narrative.
+
+```{r}
+#Setup
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(scales)
+
+country_lists <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-09/country_lists.csv')
+rank_by_year <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-09/rank_by_year.csv')
+
+# Find difference in improvement 
+start <- rank_by_year %>%
+  group_by(country) %>%
+  arrange(year) %>%
+  slice(1) %>%
+  ungroup() %>%
+  transmute(country,
+            start_year  = year,
+            start_count = visa_free_count,
+            start_rank  = rank)
+
+end <- rank_by_year %>%
+  group_by(country) %>%
+  arrange(desc(year)) %>%
+  slice(1) %>%
+  ungroup() %>%
+  transmute(country,
+            end_year  = year,
+            end_count = visa_free_count,
+            end_rank  = rank)
+
+improve <- start %>%
+  inner_join(end, by = "country") %>%
+  mutate(
+    delta_count = end_count - start_count,      # ↑ visa-free destinations
+    delta_rank  = start_rank - end_rank         # ↑ positive = better (rank number fell)
+  ) %>%
+  arrange(desc(delta_count))
+
+# Choose top 10 movers
+top <- improve %>% slice_max(delta_count, n = 10, with_ties = FALSE)
+
+yr_min <- min(rank_by_year$year, na.rm = TRUE)
+yr_max <- max(rank_by_year$year, na.rm = TRUE)
+```
+```{r}
+#Viz
+ggplot(top, aes(y = fct_reorder(country, delta_count))) +
+  geom_segment(aes(x = start_count, xend = end_count, yend = country), color = "grey70", linewidth = 1.6, lineend = "round") +
+  geom_point(aes(x = start_count), size = 3, color = "#9aa0a6") +
+  geom_point(aes(x = end_count),   size = 3.2, color = "#2C7FB8") +
+  geom_text(aes(x = end_count, label = paste0("+", delta_count)), hjust = -0.15, size = 3) +
+  scale_x_continuous(labels = number,
+                     limits = c(0, max(top$end_count) * 1.15)) +
+  labs(
+    title = "Improvements in passport power",
+    subtitle = paste0("Increase in visa-free/visa-on-arrival destinations, ", yr_min, "–", yr_max),
+    x = "Visa-free count (endpoints show first vs last year)",
+    y = NULL) +
+  theme_minimal(base_size = 11) +
+  theme(panel.grid.major.y = element_blank())
+```
+# EXPLANATION
+
+My chart answers the question, "Which countries have made the most dramatic improvements in passport power?" by ranking countries by the increase in visa-free (or visa-on-arrival) destinations from the first to the last year in the dataset. Each row is a country and the dumbbell shows its startin count and ending count with the segment length and the +label indicating the magnitude of improvement. As shown, the Vatican City and UAE had considerable improvements in "passport power" from 2006-2025. 
+

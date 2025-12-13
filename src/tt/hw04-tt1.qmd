@@ -1,0 +1,44 @@
+---
+title: "Homework 04"
+---
+
+
+## TidyTuesday Section (optional)
+
+::: {.callout-important title="Instructions"}
+
+You can count work on this week's TidyTuesday toward the exceptional work required for an A in the Homework component.
+
+:::
+
+
+Explore the week's [TidyTuesday](https://github.com/rfordatascience/tidytuesday) challenge. Develop a research question, then answer it through a short data story with [effective visualization(s)]({{< var effective-viz-url >}}).  Provide sufficient background for readers to grasp your narrative.
+
+Which clubs in EuroLeage have been the most successful historically?
+```{r}
+# Read data
+euro <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-10-07/euroleague_basketball.csv')
+```
+```{r}
+library(tidyverse)
+library(dplyr)
+top <- euro %>%
+  mutate(
+    Titles_Won = coalesce(Titles_Won, 0),
+    FinalFour_Appearances = coalesce(FinalFour_Appearances, 0)
+  ) %>%
+  arrange(desc(Titles_Won), desc(FinalFour_Appearances)) %>%
+  slice_head(n = 15) %>%                     # top clubs
+  mutate(Team = forcats::fct_inorder(Team))
+
+ggplot(top, aes(Team, Titles_Won)) +
+  geom_col() +
+  geom_text(aes(label = paste0(Titles_Won, " titles | ", FinalFour_Appearances, " FF")),
+            hjust = -0.1, size = 3) +
+  coord_flip() +
+  expand_limits(y = max(top$Titles_Won) + 1) +
+  labs(x = NULL, y = "EuroLeague titles",
+       title = "Most Historically Successful EuroLeague Clubs")
+```
+As shown in the Viz, Panathinaikos of Greece is the most succesful club in EuroLeague historically 
+

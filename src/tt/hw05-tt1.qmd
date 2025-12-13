@@ -1,0 +1,63 @@
+---
+title: "Homework 05"
+---
+
+
+## TidyTuesday Section (optional)
+
+::: {.callout-important title="Instructions"}
+
+You can count work on this week's TidyTuesday toward the exceptional work required for an A in the Homework component.
+
+:::
+
+
+Explore the week's [TidyTuesday](https://github.com/rfordatascience/tidytuesday) challenge. Develop a research question, then answer it through a short data story with [effective visualization(s)]({{< var effective-viz-url >}}).  Provide sufficient background for readers to grasp your narrative.
+
+If you wanted to see thousands of cranes, when is the best time of year to visit?
+
+```{r}
+library(readr)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+
+cranes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-09-30/cranes.csv')
+```
+```{r}
+#Change threshold to 1000 cranes
+thr <- 1000  
+
+cranes_clean <- cranes %>%
+  filter(is.na(weather_disruption) | weather_disruption==FALSE)
+
+by_month <- cranes_clean %>%
+  mutate(month=factor(month(date,label=TRUE,abbr=TRUE),levels=month.abb)) %>%
+  group_by(month) %>%
+  summarise(days_1k=sum(observations>=thr,na.rm=TRUE),
+            peak=max(observations,na.rm=TRUE),
+            total=sum(observations,na.rm=TRUE), .groups="drop") %>%
+  arrange(desc(days_1k),desc(peak),desc(total))
+
+best <- by_month %>% slice_max(days_1k, n=1, with_ties=TRUE)
+
+cat(
+  "Best time to see thousands of cranes:\n",
+  paste0(best$month, collapse=", "),
+  "  — Months that have the most days with ≥ ",thr," cranes (peak in top month = ",
+  max(best$peak,na.rm=TRUE), ").\n", sep=""
+)
+
+# Viz
+ggplot(by_month, aes(month, days_1k)) +
+  geom_col() +
+  geom_hline(yintercept=max(by_month$days_1k,na.rm=TRUE), linetype=2) +
+  labs(x=NULL, y=paste0("Days with ≥ ",thr," cranes"),
+       title="When do thousands of cranes show up?",
+       subtitle="Excl. weather disruptions") +
+  theme_minimal(base_size = 12)
+```
+
+
+
+
